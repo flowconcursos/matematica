@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Topico = { id: string; nome: string; area: string };
 
@@ -160,9 +161,9 @@ export default function NovaQuestaoPage() {
           {topicos.length === 0 && (
             <p className="text-sm text-soft">
               Nenhum tópico cadastrado ainda.{" "}
-              <a href="/topicos/novo" className="underline">
+              <Link href="/topicos/novo" className="underline">
                 Cadastre um primeiro
-              </a>
+              </Link>
               .
             </p>
           )}

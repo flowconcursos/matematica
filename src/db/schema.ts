@@ -9,6 +9,7 @@ import {
   jsonb,
   primaryKey,
   check,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
@@ -133,6 +134,36 @@ export const tentativa = pgTable(
     ),
   ],
 );
+
+export type EntradaHistoricoRevisao = {
+  data: string;
+  resultado: "acertou" | "errou";
+};
+
+export const revisao = pgTable(
+  "revisao",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    questaoId: uuid("questao_id")
+      .notNull()
+      .references(() => questao.id),
+    etapa: integer("etapa").notNull().default(0),
+    proximaData: timestamp("proxima_data", { withTimezone: true }),
+    historico: jsonb("historico").$type<EntradaHistoricoRevisao[]>().notNull().default([]),
+    concluidaEm: timestamp("concluida_em", { withTimezone: true }),
+  },
+  (t) => [
+    unique("revisao_questao_unica").on(t.questaoId),
+    check("etapa_range", sql`${t.etapa} between 0 and 3`),
+  ],
+);
+
+export const revisaoRelations = relations(revisao, ({ one }) => ({
+  questao: one(questao, {
+    fields: [revisao.questaoId],
+    references: [questao.id],
+  }),
+}));
 
 export const topicoRelations = relations(topico, ({ many }) => ({
   questoes: many(questaoTopico),

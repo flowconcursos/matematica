@@ -13,6 +13,7 @@ import {
 } from "@/db/schema";
 import { exigirSessao } from "@/lib/api";
 import { metaSegundos } from "@/lib/meta-tempo";
+import { registrarResultadoRevisao } from "@/lib/revisao-db";
 
 const registrarTentativaSchema = z
   .object({
@@ -79,6 +80,13 @@ export async function POST(request: NextRequest) {
     .insert(tentativa)
     .values({ ...dados.data, metaSegundosNaEpoca: meta })
     .returning();
+
+  await registrarResultadoRevisao(
+    db,
+    dados.data.questaoId,
+    dados.data.acertou,
+    criada.data,
+  );
 
   return NextResponse.json(criada, { status: 201 });
 }

@@ -14,8 +14,8 @@ export default function HomePage() {
       </header>
 
       <p className="text-sm text-soft">
-        Fase 1: fundação. Painel completo (acerto firme, calibração, causas
-        de erro) chega na Fase 2.
+        Fase 2: memória. Camada de IA (classificador, explicações, dossiê da
+        banca) chega na Fase 3.
       </p>
 
       <nav className="flex flex-col gap-3">
@@ -24,6 +24,18 @@ export default function HomePage() {
           className="rounded bg-ink px-4 py-4 text-center text-lg text-white"
         >
           Iniciar sessão de treino
+        </Link>
+        <Link
+          href="/caderno"
+          className="rounded bg-ink px-4 py-4 text-center text-lg text-white"
+        >
+          Caderno de erros
+        </Link>
+        <Link
+          href="/painel"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Painel
         </Link>
         <Link
           href="/topicos/novo"

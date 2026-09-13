@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
 import { metaSegundos } from "../lib/meta-tempo";
+import { registrarResultadoRevisao } from "@/lib/revisao-db";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool, { schema });
@@ -83,6 +84,7 @@ async function main() {
   const rng = criarRng(42);
 
   console.log("Limpando dados de seed anteriores...");
+  await db.delete(schema.revisao);
   await db.delete(schema.tentativa);
   await db.delete(schema.questaoTopico);
   await db.delete(schema.questao);
@@ -166,6 +168,14 @@ async function main() {
   }
 
   await db.insert(schema.tentativa).values(tentativasParaInserir);
+
+  console.log("Reconstruindo histórico de revisão espaçada...");
+  // tentativasParaInserir já está em ordem cronológica ascendente (diasAtras
+  // decresce a cada iteração do loop acima), o que é necessário para a
+  // progressão de etapas fazer sentido.
+  for (const t of tentativasParaInserir) {
+    await registrarResultadoRevisao(db, t.questaoId, t.acertou, t.data as Date);
+  }
 
   console.log(
     `Seed concluído: ${topicosCriados.length} tópicos, ${questoesCriadas.length} questões, ${tentativasParaInserir.length} tentativas.`,
