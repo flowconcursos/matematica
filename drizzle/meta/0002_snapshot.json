@@ -1,0 +1,655 @@
+{
+  "id": "079fc9d8-7ad6-4f1a-a39c-29b4bc758772",
+  "prevId": "842d671d-2126-4328-976a-2f1c649720ab",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.ai_usage": {
+      "name": "ai_usage",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "data": {
+          "name": "data",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "tarefa": {
+          "name": "tarefa",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modelo": {
+          "name": "modelo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tokens_entrada": {
+          "name": "tokens_entrada",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tokens_saida": {
+          "name": "tokens_saida",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.explicacao": {
+      "name": "explicacao",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "questao_id": {
+          "name": "questao_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nivel": {
+          "name": "nivel",
+          "type": "nivel_explicacao",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "texto": {
+          "name": "texto",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gerado_em": {
+          "name": "gerado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "modelo": {
+          "name": "modelo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "util": {
+          "name": "util",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "explicacao_questao_id_questao_id_fk": {
+          "name": "explicacao_questao_id_questao_id_fk",
+          "tableFrom": "explicacao",
+          "tableTo": "questao",
+          "columnsFrom": [
+            "questao_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.questao": {
+      "name": "questao",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "origem": {
+          "name": "origem",
+          "type": "origem_questao",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enunciado": {
+          "name": "enunciado",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alternativas": {
+          "name": "alternativas",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gabarito": {
+          "name": "gabarito",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_questao",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "banca": {
+          "name": "banca",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ano": {
+          "name": "ano",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "orgao": {
+          "name": "orgao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cargo": {
+          "name": "cargo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nivel": {
+          "name": "nivel",
+          "type": "nivel_questao",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "arquivo_origem": {
+          "name": "arquivo_origem",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "revisado_por_humano": {
+          "name": "revisado_por_humano",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "gerado_por_modelo": {
+          "name": "gerado_por_modelo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "arquivado_em": {
+          "name": "arquivado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.questao_topico": {
+      "name": "questao_topico",
+      "schema": "",
+      "columns": {
+        "questao_id": {
+          "name": "questao_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "topico_id": {
+          "name": "topico_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "questao_topico_questao_id_questao_id_fk": {
+          "name": "questao_topico_questao_id_questao_id_fk",
+          "tableFrom": "questao_topico",
+          "tableTo": "questao",
+          "columnsFrom": [
+            "questao_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "questao_topico_topico_id_topico_id_fk": {
+          "name": "questao_topico_topico_id_topico_id_fk",
+          "tableFrom": "questao_topico",
+          "tableTo": "topico",
+          "columnsFrom": [
+            "topico_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "questao_topico_questao_id_topico_id_pk": {
+          "name": "questao_topico_questao_id_topico_id_pk",
+          "columns": [
+            "questao_id",
+            "topico_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.revisao": {
+      "name": "revisao",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "questao_id": {
+          "name": "questao_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "etapa": {
+          "name": "etapa",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "proxima_data": {
+          "name": "proxima_data",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "historico": {
+          "name": "historico",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "concluida_em": {
+          "name": "concluida_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "revisao_questao_id_questao_id_fk": {
+          "name": "revisao_questao_id_questao_id_fk",
+          "tableFrom": "revisao",
+          "tableTo": "questao",
+          "columnsFrom": [
+            "questao_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "revisao_questao_unica": {
+          "name": "revisao_questao_unica",
+          "nullsNotDistinct": false,
+          "columns": [
+            "questao_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "etapa_range": {
+          "name": "etapa_range",
+          "value": "\"revisao\".\"etapa\" between 0 and 3"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.tentativa": {
+      "name": "tentativa",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "questao_id": {
+          "name": "questao_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "segundos": {
+          "name": "segundos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "meta_segundos_na_epoca": {
+          "name": "meta_segundos_na_epoca",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "confianca_declarada": {
+          "name": "confianca_declarada",
+          "type": "confianca",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resposta_dada": {
+          "name": "resposta_dada",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "acertou": {
+          "name": "acertou",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "causa_erro": {
+          "name": "causa_erro",
+          "type": "causa_erro",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alternativa_escolhida": {
+          "name": "alternativa_escolhida",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "motivo_distrator": {
+          "name": "motivo_distrator",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "anotacao": {
+          "name": "anotacao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "modo": {
+          "name": "modo",
+          "type": "modo_tentativa",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'treino'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tentativa_questao_id_questao_id_fk": {
+          "name": "tentativa_questao_id_questao_id_fk",
+          "tableFrom": "tentativa",
+          "tableTo": "questao",
+          "columnsFrom": [
+            "questao_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "causa_erro_obrigatoria_em_erro": {
+          "name": "causa_erro_obrigatoria_em_erro",
+          "value": "\"tentativa\".\"acertou\" = true or \"tentativa\".\"causa_erro\" is not null"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.topico": {
+      "name": "topico",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "area": {
+          "name": "area",
+          "type": "area",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nivel_base": {
+          "name": "nivel_base",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descricao_curta": {
+          "name": "descricao_curta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "arquivado_em": {
+          "name": "arquivado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "nivel_base_range": {
+          "name": "nivel_base_range",
+          "value": "\"topico\".\"nivel_base\" between 1 and 5"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.area": {
+      "name": "area",
+      "schema": "public",
+      "values": [
+        "aritmetica",
+        "algebra",
+        "geometria",
+        "raciocinio_logico",
+        "estatistica",
+        "financeira",
+        "conjuntos"
+      ]
+    },
+    "public.causa_erro": {
+      "name": "causa_erro",
+      "schema": "public",
+      "values": [
+        "conceito",
+        "conta",
+        "leitura",
+        "tempo",
+        "distrator"
+      ]
+    },
+    "public.confianca": {
+      "name": "confianca",
+      "schema": "public",
+      "values": [
+        "certo",
+        "duvida",
+        "chute"
+      ]
+    },
+    "public.modo_tentativa": {
+      "name": "modo_tentativa",
+      "schema": "public",
+      "values": [
+        "treino",
+        "revisao",
+        "simulado"
+      ]
+    },
+    "public.nivel_explicacao": {
+      "name": "nivel_explicacao",
+      "schema": "public",
+      "values": [
+        "curta",
+        "passo_a_passo",
+        "por_que_erro_parecia_certo"
+      ]
+    },
+    "public.nivel_questao": {
+      "name": "nivel_questao",
+      "schema": "public",
+      "values": [
+        "facil",
+        "medio",
+        "dificil"
+      ]
+    },
+    "public.origem_questao": {
+      "name": "origem_questao",
+      "schema": "public",
+      "values": [
+        "manual",
+        "pdf",
+        "gerada_ia"
+      ]
+    },
+    "public.tipo_questao": {
+      "name": "tipo_questao",
+      "schema": "public",
+      "values": [
+        "multipla",
+        "certo_errado",
+        "discursiva",
+        "calculo"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

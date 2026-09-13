@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
+import { tokensUsadosHoje } from "@/lib/ai-db";
 
-export default function HomePage() {
+// Precisa ser renderizado a cada request: uso de IA muda ao longo do dia.
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const teto = Number(process.env.AI_TETO_DIARIO_TOKENS ?? 0);
+  const usados = teto > 0 ? await tokensUsadosHoje() : null;
+
   return (
     <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-6 px-4 py-10">
       <header className="flex items-center justify-between">
@@ -14,9 +21,19 @@ export default function HomePage() {
       </header>
 
       <p className="text-sm text-soft">
-        Fase 2: memória. Camada de IA (classificador, explicações, dossiê da
-        banca) chega na Fase 3.
+        Fase 3: IA básica. Classificador de questão e explicação em 3
+        níveis já funcionam; dossiê da banca e diagnóstico chegam depois.
       </p>
+
+      {usados !== null && (
+        <p
+          className={`text-xs ${usados >= teto ? "text-red" : "text-soft"}`}
+        >
+          IA hoje: {usados.toLocaleString("pt-BR")} de{" "}
+          {teto.toLocaleString("pt-BR")} tokens
+          {usados >= teto && " — teto atingido, novas chamadas bloqueadas até amanhã."}
+        </p>
+      )}
 
       <nav className="flex flex-col gap-3">
         <Link

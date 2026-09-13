@@ -1,22 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 type Topico = { id: string; nome: string; area: string };
+
+type SugestaoClassificador = {
+  topicoNomesSugeridos: string[];
+  prerequisitosSugeridos: string[];
+  tipoArmadilha: string;
+  competenciaReal: "interpretacao" | "calculo" | "modelagem" | "memoria_formula";
+  tempoRazoavelSegundos: number;
+};
 
 const TIPOS = ["multipla", "certo_errado", "discursiva", "calculo"] as const;
 const NIVEIS = ["facil", "medio", "dificil"] as const;
 
 export default function NovaQuestaoPage() {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [topicos, setTopicos] = useState<Topico[]>([]);
   const [tipo, setTipo] = useState<(typeof TIPOS)[number]>("multipla");
   const [alternativas, setAlternativas] = useState(["", "", "", ""]);
   const [topicoIds, setTopicoIds] = useState<string[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [classificando, setClassificando] = useState(false);
+  const [erroClassificador, setErroClassificador] = useState<string | null>(null);
+  const [sugestao, setSugestao] = useState<SugestaoClassificador | null>(null);
 
   useEffect(() => {
     fetch("/api/topicos")
@@ -28,6 +40,57 @@ export default function NovaQuestaoPage() {
     setTopicoIds((atual) =>
       atual.includes(id) ? atual.filter((t) => t !== id) : [...atual, id],
     );
+  }
+
+  async function sugerirComIa() {
+    if (!formRef.current) return;
+    const formData = new FormData(formRef.current);
+    const enunciado = String(formData.get("enunciado") ?? "").trim();
+    const gabarito = String(formData.get("gabarito") ?? "").trim();
+    const nivel = String(formData.get("nivel") ?? "");
+
+    if (!enunciado || !gabarito || !nivel) {
+      setErroClassificador(
+        "Preencha enunciado, gabarito e nível antes de pedir sugestão.",
+      );
+      return;
+    }
+
+    setClassificando(true);
+    setErroClassificador(null);
+    setSugestao(null);
+
+    const resposta = await fetch("/api/ia/classificar-questao", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        enunciado,
+        gabarito,
+        tipo,
+        nivel,
+        banca: String(formData.get("banca") ?? "") || undefined,
+        alternativas:
+          tipo === "multipla" ? alternativas.filter((a) => a.trim()) : undefined,
+      }),
+    });
+
+    setClassificando(false);
+
+    if (!resposta.ok) {
+      const corpo = await resposta.json().catch(() => null);
+      setErroClassificador(corpo?.erro ?? "Não foi possível classificar agora.");
+      return;
+    }
+
+    const dados: SugestaoClassificador = await resposta.json();
+    setSugestao(dados);
+
+    const idsSugeridos = topicos
+      .filter((t) => dados.topicoNomesSugeridos.includes(t.nome))
+      .map((t) => t.id);
+    if (idsSugeridos.length > 0) {
+      setTopicoIds((atual) => Array.from(new Set([...atual, ...idsSugeridos])));
+    }
   }
 
   async function enviar(formData: FormData) {
@@ -67,7 +130,7 @@ export default function NovaQuestaoPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-4 px-4 py-8">
       <h1 className="text-lg font-semibold text-ink">Nova questão</h1>
-      <form action={enviar} className="flex flex-col gap-3">
+      <form ref={formRef} action={enviar} className="flex flex-col gap-3">
         <label className="text-sm text-ink">
           Enunciado
           <textarea
@@ -135,6 +198,51 @@ export default function NovaQuestaoPage() {
             ))}
           </select>
         </label>
+
+        <div className="flex flex-col gap-2 rounded border border-line bg-white/60 p-3">
+          <button
+            type="button"
+            onClick={sugerirComIa}
+            disabled={classificando}
+            className="self-start rounded border border-ink px-3 py-2 text-sm text-ink disabled:opacity-60"
+          >
+            {classificando ? "Consultando IA…" : "Sugerir com IA"}
+          </button>
+          <p className="text-xs text-soft">
+            A IA sugere tópicos, mas você confere e decide antes de salvar.
+            Toda questão gerada assim continua marcada como revisada por
+            você, não pela IA.
+          </p>
+          {erroClassificador && (
+            <p className="text-sm text-red">{erroClassificador}</p>
+          )}
+          {sugestao && (
+            <div className="flex flex-col gap-1 text-sm text-ink">
+              <p>
+                <span className="text-soft">Tipo de armadilha: </span>
+                {sugestao.tipoArmadilha}
+              </p>
+              <p>
+                <span className="text-soft">Competência real cobrada: </span>
+                {sugestao.competenciaReal}
+              </p>
+              <p>
+                <span className="text-soft">Tempo razoável estimado: </span>
+                {sugestao.tempoRazoavelSegundos}s
+              </p>
+              {sugestao.prerequisitosSugeridos.length > 0 && (
+                <p>
+                  <span className="text-soft">Pré-requisitos sugeridos: </span>
+                  {sugestao.prerequisitosSugeridos.join(", ")}
+                </p>
+              )}
+              <p className="text-xs text-amber">
+                Impressão do modelo, não verificada — confira os tópicos
+                marcados abaixo antes de salvar.
+              </p>
+            </div>
+          )}
+        </div>
 
         <fieldset>
           <legend className="mb-1 text-sm text-ink">Tópicos</legend>

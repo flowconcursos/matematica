@@ -4,7 +4,7 @@ Instrumento pessoal de diagnóstico e treino de matemática/raciocínio lógico.
 Ver o documento de produto completo para contexto, princípios e o roteiro
 de fases — este README cobre só o estado técnico atual.
 
-## Status: Fase 2 — Memória
+## Status: Fase 3 — IA básica
 
 Entregue na Fase 1 (fundação):
 
@@ -43,10 +43,37 @@ Entregue na Fase 2 (memória):
   ao longo do tempo, constância diária (30 dias) e tempo médio por
   tópico — server component, sem chamada a IA.
 
-Fora do escopo (chegam depois, conforme o roteiro): qualquer camada de
-IA, grafo de pré-requisitos/trilha de base (o "buraco de pré-requisito"
-do caderno só fica registrado como alerta — a trilha que vai agir sobre
-ele é Fase 4), importação de PDF, dossiê de banca e simulado.
+Entregue na Fase 3 (IA básica):
+
+- `src/lib/ai.ts` (lógica pura: modelos, retry com backoff exponencial,
+  timeout — coberta por testes, nunca chama a API real) e
+  `src/lib/ai-db.ts` (orquestração: verificação de orçamento diário,
+  registro de uso, chamada ao `@google/genai`).
+- Tabela `ai_usage` (tokens por chamada) e teto diário configurável via
+  `AI_TETO_DIARIO_TOKENS` (em tokens totais/dia); ao estourar, novas
+  chamadas são bloqueadas com aviso na interface (não falha em
+  silêncio) — indicador visível na home.
+- Tarefa A — classificador de questão (`POST /api/ia/classificar-questao`):
+  sugere tópicos/pré-requisitos (ancorados nos tópicos já cadastrados,
+  nunca inventa categoria nova), tipo de armadilha, competência real e
+  tempo razoável estimado. Botão "Sugerir com IA" em `/questoes/nova`;
+  a sugestão só pré-marca tópicos, o humano sempre confere antes de
+  salvar.
+- Tarefa B — explicação em 3 níveis (`POST /api/ia/explicacao`, tabela
+  `explicacao`): curta, passo a passo, e "por que meu erro parecia
+  certo" (usa a alternativa escolhida e a causa declarada). Liberada só
+  depois que a resposta foi registrada; os dois primeiros níveis usam
+  cache por questão, o terceiro é sempre gerado de novo. Feedback
+  "foi útil?" por explicação.
+- Toda chamada usa `responseSchema` (saída estruturada), nunca parsing
+  de texto livre.
+
+Fora do escopo (chegam depois, conforme o roteiro): grafo de
+pré-requisitos/trilha de base (o "buraco de pré-requisito" do caderno
+só fica registrado como alerta — a trilha que vai agir sobre ele é
+Fase 4), importação de PDF, dossiê de banca, simulado, heurísticas,
+diagnóstico periódico, gerador de questões e tutor conversacional
+(Fases 4-6).
 
 ## Decisões provisórias tomadas
 
@@ -63,6 +90,14 @@ ele é Fase 4), importação de PDF, dossiê de banca e simulado.
   dias diferentes). Os limiares de "frágil" (<50%) e "em construção"
   (entre 50% e 80%, ou acima de 80% sem volume/dias suficientes) são uma
   decisão provisória, sem número definido no documento.
+- **Modelos Gemini** (`src/lib/ai.ts`): conferidos em
+  ai.google.dev/gemini-api/docs/models em 2026-09-13 —
+  `gemini-3.5-flash` (rotina) e `gemini-3.1-pro-preview` (análises
+  pesadas, ainda não usado nesta fase). Revalide antes de trocar; a
+  linha muda com frequência e nomes decorados quebram em produção.
+- **Teto diário de IA**: implementado em tokens totais/dia
+  (`AI_TETO_DIARIO_TOKENS`), não em custo estimado em R$ — mais simples
+  e não depende de tabela de preço por modelo, que desatualiza fácil.
 - **Banco de dados de desenvolvimento**: este ambiente usa um Postgres
   local (não há acesso a Neon/Vercel a partir daqui). Em produção, basta
   apontar `DATABASE_URL` para o Neon — o schema e as migrations do
@@ -85,11 +120,13 @@ npm run dev
 
 ### Variáveis de ambiente
 
-| Variável        | Descrição                                                        |
-| --------------- | ----------------------------------------------------------------- |
-| `DATABASE_URL`  | Connection string do Postgres (Neon em produção).                 |
-| `APP_PASSWORD`  | Senha única de acesso ao app.                                     |
-| `SESSION_SECRET`| Segredo para assinar o cookie de sessão. Gere com `openssl rand -base64 32`. |
+| Variável                 | Descrição                                                        |
+| ------------------------ | ----------------------------------------------------------------- |
+| `DATABASE_URL`           | Connection string do Postgres (Neon em produção).                 |
+| `APP_PASSWORD`           | Senha única de acesso ao app.                                     |
+| `SESSION_SECRET`         | Segredo para assinar o cookie de sessão. Gere com `openssl rand -base64 32`. |
+| `GEMINI_API_KEY`         | Chave da API Gemini (aistudio.google.com/apikey). Sem ela, os recursos de IA falham com aviso na interface, o resto do app continua funcionando. |
+| `AI_TETO_DIARIO_TOKENS`  | Teto diário de tokens (entrada + saída) para as chamadas de IA. `0` ou vazio = sem teto. |
 
 ### Scripts
 
@@ -109,5 +146,6 @@ src/
   components/     componentes de UI compartilhados
   db/             schema Drizzle, cliente do banco, seed
   lib/            regras de negócio (acerto firme, domínio, revisão espaçada,
-                  meta de tempo, sessão, fila offline, agregações do painel)
+                  meta de tempo, sessão, fila offline, agregações do painel,
+                  cliente de IA e controle de custo)
 ```

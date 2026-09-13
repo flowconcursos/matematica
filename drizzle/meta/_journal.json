@@ -15,6 +15,13 @@
       "when": 1789328519121,
       "tag": "0001_furry_patch",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789331107682,
+      "tag": "0002_nasty_thanos",
+      "breakpoints": true
     }
   ]
 }

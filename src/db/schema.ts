@@ -58,6 +58,12 @@ export const modoTentativaEnum = pgEnum("modo_tentativa", [
   "simulado",
 ]);
 
+export const nivelExplicacaoEnum = pgEnum("nivel_explicacao", [
+  "curta",
+  "passo_a_passo",
+  "por_que_erro_parecia_certo",
+]);
+
 export const topico = pgTable(
   "topico",
   {
@@ -164,6 +170,34 @@ export const revisaoRelations = relations(revisao, ({ one }) => ({
     references: [questao.id],
   }),
 }));
+
+export const explicacao = pgTable("explicacao", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  questaoId: uuid("questao_id")
+    .notNull()
+    .references(() => questao.id),
+  nivel: nivelExplicacaoEnum("nivel").notNull(),
+  texto: text("texto").notNull(),
+  geradoEm: timestamp("gerado_em", { withTimezone: true }).notNull().defaultNow(),
+  modelo: text("modelo").notNull(),
+  util: boolean("util"),
+});
+
+export const explicacaoRelations = relations(explicacao, ({ one }) => ({
+  questao: one(questao, {
+    fields: [explicacao.questaoId],
+    references: [questao.id],
+  }),
+}));
+
+export const aiUsage = pgTable("ai_usage", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  data: timestamp("data", { withTimezone: true }).notNull().defaultNow(),
+  tarefa: text("tarefa").notNull(),
+  modelo: text("modelo").notNull(),
+  tokensEntrada: integer("tokens_entrada").notNull(),
+  tokensSaida: integer("tokens_saida").notNull(),
+});
 
 export const topicoRelations = relations(topico, ({ many }) => ({
   questoes: many(questaoTopico),

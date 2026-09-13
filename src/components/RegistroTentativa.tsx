@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer, useState } from "react";
 import { Cronometro } from "@/components/Cronometro";
+import { ExplicacaoIA } from "@/components/ExplicacaoIA";
 
 export type Confianca = "certo" | "duvida" | "chute";
 export type CausaErro = "conceito" | "conta" | "leitura" | "tempo" | "distrator";
@@ -244,6 +245,15 @@ export function RegistroTentativa({
             value={estado.anotacao}
             onChange={(e) => dispatch({ tipo: "definirAnotacao", anotacao: e.target.value })}
             className="rounded border border-line px-3 py-2"
+          />
+
+          <ExplicacaoIA
+            questaoId={questao.id}
+            acertou={estado.acertou ?? false}
+            alternativaEscolhida={estado.alternativaEscolhida ?? undefined}
+            causaErro={estado.causaErro ?? undefined}
+            motivoDistrator={estado.motivoDistrator || undefined}
+            anotacao={estado.anotacao || undefined}
           />
 
           <button
