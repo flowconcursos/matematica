@@ -64,6 +64,12 @@ export const nivelExplicacaoEnum = pgEnum("nivel_explicacao", [
   "por_que_erro_parecia_certo",
 ]);
 
+export const confiabilidadeEnum = pgEnum("confiabilidade", [
+  "baixa",
+  "media",
+  "alta",
+]);
+
 export const topico = pgTable(
   "topico",
   {
@@ -146,6 +152,20 @@ export const prerequisitoRelations = relations(prerequisito, ({ one }) => ({
   }),
 }));
 
+/**
+ * Uma sessão de simulado (seção 3 do doc). meta_segundos aqui é o tempo
+ * total configurado da prova, não a meta por questão.
+ */
+export const sessao = pgTable("sessao", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  data: timestamp("data", { withTimezone: true }).notNull().defaultNow(),
+  inicio: timestamp("inicio", { withTimezone: true }).notNull(),
+  fim: timestamp("fim", { withTimezone: true }),
+  modo: modoTentativaEnum("modo").notNull(),
+  metaSegundos: integer("meta_segundos").notNull(),
+  observacao: text("observacao"),
+});
+
 export const tentativa = pgTable(
   "tentativa",
   {
@@ -153,6 +173,9 @@ export const tentativa = pgTable(
     questaoId: uuid("questao_id")
       .notNull()
       .references(() => questao.id),
+    // Só preenchido para tentativas de simulado (necessário para comparar
+    // simulados entre si; o doc não detalha essa ligação no schema).
+    sessaoId: uuid("sessao_id").references(() => sessao.id),
     data: timestamp("data", { withTimezone: true }).notNull().defaultNow(),
     segundos: integer("segundos").notNull(),
     metaSegundosNaEpoca: integer("meta_segundos_na_epoca").notNull(),
@@ -247,6 +270,27 @@ export const liberacaoManual = pgTable("liberacao_manual", {
     .notNull()
     .defaultNow(),
   acertosNoTeste: integer("acertos_no_teste").notNull(),
+});
+
+export type ConteudoDossie = {
+  observado: {
+    distribuicaoPorTopico: { topico: string; contagem: number }[];
+    distribuicaoPorTipo: { tipo: string; contagem: number }[];
+    tempoMedioSegundos: number;
+    nQuestoes: number;
+  };
+  inferido: string;
+  conhecimentoGeral: string;
+};
+
+export const dossieBanca = pgTable("dossie_banca", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  banca: text("banca").notNull(),
+  versao: integer("versao").notNull().default(1),
+  geradoEm: timestamp("gerado_em", { withTimezone: true }).notNull().defaultNow(),
+  baseadoEmNQuestoes: integer("baseado_em_n_questoes").notNull(),
+  conteudo: jsonb("conteudo").$type<ConteudoDossie>().notNull(),
+  confiabilidade: confiabilidadeEnum("confiabilidade").notNull(),
 });
 
 export const topicoRelations = relations(topico, ({ many }) => ({

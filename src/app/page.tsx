@@ -21,8 +21,8 @@ export default async function HomePage() {
       </header>
 
       <p className="text-sm text-soft">
-        Fase 3: IA básica. Classificador de questão e explicação em 3
-        níveis já funcionam; dossiê da banca e diagnóstico chegam depois.
+        Fase 5: banca. Importação de PDF, dossiê da banca e simulado já
+        funcionam; heurísticas e diagnóstico periódico chegam na Fase 6.
       </p>
 
       {usados !== null && (
@@ -59,6 +59,24 @@ export default async function HomePage() {
           className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
         >
           Trilha de base
+        </Link>
+        <Link
+          href="/simulado"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Simulado
+        </Link>
+        <Link
+          href="/dossie"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Dossiê da banca
+        </Link>
+        <Link
+          href="/importar"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Importar prova (PDF/texto)
         </Link>
         <Link
           href="/topicos/novo"

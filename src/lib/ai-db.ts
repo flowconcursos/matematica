@@ -59,6 +59,7 @@ export async function gerarSaidaEstruturada<T>(params: {
   prompt: string;
   responseSchema: Schema;
   timeoutMs?: number;
+  arquivo?: { base64: string; mimeType: string };
 }): Promise<T> {
   await verificarOrcamento();
 
@@ -68,8 +69,9 @@ export async function gerarSaidaEstruturada<T>(params: {
         modelo: params.modelo,
         prompt: params.prompt,
         responseSchema: params.responseSchema,
+        arquivo: params.arquivo,
       }),
-      params.timeoutMs ?? 20_000,
+      params.timeoutMs ?? 30_000,
     ),
   );
 

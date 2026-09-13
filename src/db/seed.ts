@@ -95,8 +95,9 @@ async function main() {
   const idPorNomeTopico = new Map(topicosCriados.map((t) => [t.nome, t]));
 
   console.log("Inserindo questões...");
+  const BANCAS = ["CESPE/CEBRASPE", "FGV", "FCC"];
   const questoesCriadas: (typeof schema.questao.$inferSelect & { area: Area })[] = [];
-  for (const q of QUESTOES) {
+  for (const [indice, q] of QUESTOES.entries()) {
     const topico = idPorNomeTopico.get(q.topicoNome);
     if (!topico) throw new Error(`Tópico não encontrado: ${q.topicoNome}`);
 
@@ -110,6 +111,8 @@ async function main() {
         tipo: q.tipo,
         nivel: q.nivel,
         revisadoPorHumano: true,
+        banca: BANCAS[indice % BANCAS.length],
+        ano: 2023 + (indice % 3),
       })
       .returning();
 

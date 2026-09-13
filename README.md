@@ -4,7 +4,7 @@ Instrumento pessoal de diagnóstico e treino de matemática/raciocínio lógico.
 Ver o documento de produto completo para contexto, princípios e o roteiro
 de fases — este README cobre só o estado técnico atual.
 
-## Status: Fase 4 — Base (trilha)
+## Status: Fase 5 — Banca
 
 Entregue na Fase 1 (fundação):
 
@@ -92,9 +92,38 @@ Entregue na Fase 4 (base):
   Degrada com elegância quando o tópico tem poucas questões
   cadastradas, em vez de travar.
 
-Fora do escopo (chegam depois, conforme o roteiro): importação de PDF,
-dossiê de banca, simulado, heurísticas, diagnóstico periódico, gerador
-de questões e tutor conversacional (Fases 5-6).
+Entregue na Fase 5 (banca):
+
+- Importação (`/importar`, `POST /api/importacao/extrair`): PDF ou texto
+  colado vai direto ao Gemini (sem parser de PDF em JavaScript), que
+  devolve as questões extraídas em JSON estruturado, já com tópicos
+  sugeridos (ancorados nos tópicos existentes). Nada entra no banco
+  automaticamente — cai numa tela de conferência item por item, editável,
+  com aviso de possível duplicata (`src/lib/similaridade.ts`, Jaccard
+  sobre palavras normalizadas, coberta por testes) antes de aprovar.
+- Dossiê da banca (Tarefa E, `/dossie`): OBSERVADO calculado em JS puro a
+  partir dos dados reais do usuário (`src/lib/dossie.ts`, sem IA,
+  coberto por testes) — distribuição por tópico/tipo, tempo médio,
+  confiabilidade (baixa/média/alta conforme nº de questões). INFERIDO e
+  CONHECIMENTO GERAL vêm de uma chamada ao Gemini (modelo Pro, primeiro
+  uso real da linha "análises pesadas"), sempre separados visualmente
+  das camadas observadas, com limite de geração de 1x por semana.
+- Simulado (`/simulado`): configurável (nº de questões, tempo total,
+  áreas, banca). Modo prova roda inteiramente no cliente (resiliente a
+  rede ruim) sem revelar gabarito nem mostrar explicação por questão —
+  só o cronômetro total corre. Ao final, revela gabarito e tempo por
+  questão, mostra a curva de acerto por quartil do tempo decorrido
+  (mede resistência, não conhecimento), coleta a causa do erro de cada
+  errada (obrigatória antes de salvar, por causa da constraint do
+  banco) e só então grava as tentativas (`modo=simulado`, ligadas a uma
+  `sessao` — tabela nova, necessária para simulados serem comparáveis
+  entre si) — as erradas entram no caderno automaticamente, reaproveitando
+  o mesmo efeito colateral da Fase 2. Histórico de simulados em
+  `/simulado` só lista sessões realmente finalizadas.
+
+Fora do escopo (chegam depois, conforme o roteiro): heurísticas,
+diagnóstico periódico, gerador de questões e tutor conversacional
+(Fase 6).
 
 ## Decisões provisórias tomadas
 
@@ -127,6 +156,24 @@ de questões e tutor conversacional (Fases 5-6).
   diretos do tópico (a aresta na tabela `prerequisito`), não a cadeia
   transitiva completa — é a leitura literal do texto ("todos os seus
   pré-requisitos estão firmes").
+- **Detecção de duplicata na importação**: similaridade de Jaccard sobre
+  palavras normalizadas, limiar 0.6 — o doc pede "detecção por
+  similaridade" sem especificar algoritmo nem limiar.
+- **Ligação simulado ↔ tentativa**: o doc não detalha como agrupar as
+  tentativas de um mesmo simulado para torná-los "comparáveis entre
+  si". Foi adicionada `tentativa.sessao_id` (nullable, só preenchido em
+  modo simulado) apontando para a tabela `sessao` (que o doc já define
+  na seção 3, mas nenhuma fase anterior precisava usar).
+- **Simulado roda no cliente até o fim**: para resistir a rede ruim
+  durante a prova, nenhuma tentativa é gravada até o usuário ver o
+  resultado e informar a causa dos erros — só `POST /finalizar` grava
+  no banco. Isso também resolve a constraint "causa do erro obrigatória
+  em erro" sem violar "modo prova bloqueia gabarito parcial": a causa
+  só é pedida depois da correção, nunca durante a prova.
+- **Tempo esgotado no simulado**: questões não respondidas quando o
+  cronômetro total zera são registradas como confiança "chute" e
+  resposta "(sem resposta — tempo esgotado)" — o doc não define o que
+  fazer com questões não respondidas.
 - **Banco de dados de desenvolvimento**: este ambiente usa um Postgres
   local (não há acesso a Neon/Vercel a partir daqui). Em produção, basta
   apontar `DATABASE_URL` para o Neon — o schema e as migrations do

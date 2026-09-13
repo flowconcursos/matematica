@@ -36,6 +36,13 @@
       "when": 1789332636778,
       "tag": "0004_striped_marvel_apes",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789334432219,
+      "tag": "0005_boring_husk",
+      "breakpoints": true
     }
   ]
 }

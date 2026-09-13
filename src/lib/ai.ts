@@ -1,4 +1,4 @@
-import { GoogleGenAI, type Schema } from "@google/genai";
+import { GoogleGenAI, createPartFromBase64, type Schema } from "@google/genai";
 
 /**
  * Nomes de modelo conferidos em ai.google.dev/gemini-api/docs/models em
@@ -98,11 +98,21 @@ export async function chamarGemini(params: {
   modelo: string;
   prompt: string;
   responseSchema: Schema;
+  /**
+   * Arquivo enviado nativamente ao Gemini (ex: PDF), sem parser em
+   * JavaScript (seção 2 do doc: "upload vai direto ao Gemini, que lê
+   * PDF nativamente").
+   */
+  arquivo?: { base64: string; mimeType: string };
 }): Promise<ResultadoChamada> {
   const ai = obterCliente();
+  const contents = params.arquivo
+    ? [params.prompt, createPartFromBase64(params.arquivo.base64, params.arquivo.mimeType)]
+    : params.prompt;
+
   const resposta = await ai.models.generateContent({
     model: params.modelo,
-    contents: params.prompt,
+    contents,
     config: {
       responseMimeType: "application/json",
       responseSchema: params.responseSchema,

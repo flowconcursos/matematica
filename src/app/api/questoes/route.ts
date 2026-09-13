@@ -22,6 +22,8 @@ const criarQuestaoSchema = z.object({
   orgao: z.string().optional(),
   cargo: z.string().optional(),
   topicoIds: z.array(z.string().uuid()).min(1),
+  origem: z.enum(["manual", "pdf"]).default("manual"),
+  arquivoOrigem: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -76,7 +78,6 @@ export async function POST(request: NextRequest) {
       .insert(questao)
       .values({
         ...camposQuestao,
-        origem: "manual",
         revisadoPorHumano: true,
       })
       .returning();
