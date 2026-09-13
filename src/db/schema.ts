@@ -114,6 +114,38 @@ export const questaoTopico = pgTable(
   (t) => [primaryKey({ columns: [t.questaoId, t.topicoId] })],
 );
 
+export const prerequisito = pgTable(
+  "prerequisito",
+  {
+    topicoId: uuid("topico_id")
+      .notNull()
+      .references(() => topico.id, { onDelete: "cascade" }),
+    dependeDeTopicoId: uuid("depende_de_topico_id")
+      .notNull()
+      .references(() => topico.id, { onDelete: "cascade" }),
+  },
+  (t) => [
+    primaryKey({ columns: [t.topicoId, t.dependeDeTopicoId] }),
+    check(
+      "prerequisito_nao_autorreferente",
+      sql`${t.topicoId} != ${t.dependeDeTopicoId}`,
+    ),
+  ],
+);
+
+export const prerequisitoRelations = relations(prerequisito, ({ one }) => ({
+  topico: one(topico, {
+    fields: [prerequisito.topicoId],
+    references: [topico.id],
+    relationName: "topico",
+  }),
+  dependeDe: one(topico, {
+    fields: [prerequisito.dependeDeTopicoId],
+    references: [topico.id],
+    relationName: "dependeDe",
+  }),
+}));
+
 export const tentativa = pgTable(
   "tentativa",
   {
@@ -197,6 +229,24 @@ export const aiUsage = pgTable("ai_usage", {
   modelo: text("modelo").notNull(),
   tokensEntrada: integer("tokens_entrada").notNull(),
   tokensSaida: integer("tokens_saida").notNull(),
+});
+
+/**
+ * Override do botão "não concordo com o bloqueio" (seção 4.3): quando
+ * o teste relâmpago é aprovado, o tópico fica liberado mesmo que o
+ * pré-requisito ainda não esteja "firme" nos dados. Não existe no
+ * doc como tabela nomeada — é a peça mínima necessária para persistir
+ * esse override (sem ela, o bloqueio simplesmente voltaria no próximo
+ * carregamento).
+ */
+export const liberacaoManual = pgTable("liberacao_manual", {
+  topicoId: uuid("topico_id")
+    .primaryKey()
+    .references(() => topico.id, { onDelete: "cascade" }),
+  liberadaEm: timestamp("liberada_em", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  acertosNoTeste: integer("acertos_no_teste").notNull(),
 });
 
 export const topicoRelations = relations(topico, ({ many }) => ({

@@ -55,6 +55,12 @@ export default async function HomePage() {
           Painel
         </Link>
         <Link
+          href="/trilha"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Trilha de base
+        </Link>
+        <Link
           href="/topicos/novo"
           className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
         >

@@ -4,7 +4,7 @@ Instrumento pessoal de diagnóstico e treino de matemática/raciocínio lógico.
 Ver o documento de produto completo para contexto, princípios e o roteiro
 de fases — este README cobre só o estado técnico atual.
 
-## Status: Fase 3 — IA básica
+## Status: Fase 4 — Base (trilha)
 
 Entregue na Fase 1 (fundação):
 
@@ -68,12 +68,33 @@ Entregue na Fase 3 (IA básica):
 - Toda chamada usa `responseSchema` (saída estruturada), nunca parsing
   de texto livre.
 
-Fora do escopo (chegam depois, conforme o roteiro): grafo de
-pré-requisitos/trilha de base (o "buraco de pré-requisito" do caderno
-só fica registrado como alerta — a trilha que vai agir sobre ele é
-Fase 4), importação de PDF, dossiê de banca, simulado, heurísticas,
-diagnóstico periódico, gerador de questões e tutor conversacional
-(Fases 4-6).
+Entregue na Fase 4 (base):
+
+- Tabela `prerequisito` (grafo dirigido de tópicos) e `src/lib/grafo.ts`:
+  `haveriaCiclo` valida na escrita que uma nova aresta não fecha um
+  ciclo (busca no grafo a partir do pré-requisito, seguindo as
+  dependências existentes) — coberta por testes.
+- `src/lib/trilha.ts`: `topicoLiberado` — um tópico só libera quando
+  todos os seus pré-requisitos diretos estão "firme" — coberta por
+  testes. Com isso, as 4 regras críticas do documento (acerto firme,
+  repetição espaçada, ciclo no grafo, liberação de tópico) estão
+  todas testadas.
+- `/trilha`: lista de tópicos com domínio e estado de bloqueio,
+  cadastro/remoção de pré-requisitos (erro amigável se criaria ciclo).
+- Botão "não concordo com o bloqueio" → teste relâmpago de 5 questões
+  do pré-requisito bloqueador; aprovado libera o tópico via uma tabela
+  de override (`liberacao_manual` — não existe no doc como tabela
+  nomeada, é a peça mínima para o "libera" persistir).
+- Fluxo de fragilidade (`/trilha/reforco/[topicoId]`): conceito
+  (descrição curta do tópico) → até 3 exemplos resolvidos em níveis
+  crescentes (com explicação passo a passo da Tarefa B) → até 10
+  questões de fixação → reavaliação (domínio recalculado ao final).
+  Degrada com elegância quando o tópico tem poucas questões
+  cadastradas, em vez de travar.
+
+Fora do escopo (chegam depois, conforme o roteiro): importação de PDF,
+dossiê de banca, simulado, heurísticas, diagnóstico periódico, gerador
+de questões e tutor conversacional (Fases 5-6).
 
 ## Decisões provisórias tomadas
 
@@ -98,6 +119,14 @@ diagnóstico periódico, gerador de questões e tutor conversacional
 - **Teto diário de IA**: implementado em tokens totais/dia
   (`AI_TETO_DIARIO_TOKENS`), não em custo estimado em R$ — mais simples
   e não depende de tabela de preço por modelo, que desatualiza fácil.
+- **Limiar do teste relâmpago** (`src/lib/trilha.ts`): o doc diz "acertou,
+  libera" sem definir quantas das 5 questões. Decisão provisória: exige
+  acerto de todas as 5, por ser uma exceção deliberadamente rigorosa ao
+  bloqueio normal.
+- **Regra de liberação de tópico**: considera só os pré-requisitos
+  diretos do tópico (a aresta na tabela `prerequisito`), não a cadeia
+  transitiva completa — é a leitura literal do texto ("todos os seus
+  pré-requisitos estão firmes").
 - **Banco de dados de desenvolvimento**: este ambiente usa um Postgres
   local (não há acesso a Neon/Vercel a partir daqui). Em produção, basta
   apontar `DATABASE_URL` para o Neon — o schema e as migrations do
