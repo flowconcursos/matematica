@@ -27,6 +27,7 @@ type ItemRevisao = {
   questao: QuestaoRevisao;
   ultimaAnotacao: string | null;
   errosAcumulados: number;
+  heuristicasAtivas: { id: string; texto: string }[];
 };
 
 type Fila = { vencidas: ItemRevisao[]; alertas: ItemRevisao[] } | "carregando";
@@ -124,6 +125,19 @@ export default function CadernoPage() {
           {atual.ultimaAnotacao && (
             <div className="rounded border border-line bg-white/60 p-3 text-sm text-soft">
               Sua nota da vez passada: {atual.ultimaAnotacao}
+            </div>
+          )}
+
+          {atual.heuristicasAtivas.length > 0 && (
+            <div className="rounded border border-green/40 bg-green/5 p-3 text-sm text-ink">
+              <p className="mb-1 text-xs font-semibold text-green">
+                Heurística(s) deste tópico
+              </p>
+              <ul className="flex flex-col gap-1">
+                {atual.heuristicasAtivas.map((h) => (
+                  <li key={h.id}>{h.texto}</li>
+                ))}
+              </ul>
             </div>
           )}
 

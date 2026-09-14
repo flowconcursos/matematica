@@ -14,6 +14,8 @@ import {
 import { exigirSessao } from "@/lib/api";
 import { metaSegundos } from "@/lib/meta-tempo";
 import { registrarResultadoRevisao } from "@/lib/revisao-db";
+import { atualizarContadoresHeuristicas } from "@/lib/heuristica-db";
+import { acertoFirme } from "@/lib/calculo";
 
 const finalizarSchema = z.object({
   respostas: z
@@ -120,6 +122,15 @@ export async function POST(
       .returning();
 
     await registrarResultadoRevisao(db, r.questaoId, acertou, criada.data);
+    await atualizarContadoresHeuristicas(
+      r.questaoId,
+      acertoFirme({
+        acertou: criada.acertou,
+        confiancaDeclarada: criada.confiancaDeclarada,
+        segundos: criada.segundos,
+        metaSegundosNaEpoca: criada.metaSegundosNaEpoca,
+      }),
+    );
   }
 
   await db.update(sessao).set({ fim: agora }).where(eq(sessao.id, sessaoId));

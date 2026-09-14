@@ -6,6 +6,7 @@ import {
   questao,
   questaoTopico,
   topico,
+  explicacao,
   tipoQuestaoEnum,
   nivelQuestaoEnum,
 } from "@/db/schema";
@@ -22,8 +23,12 @@ const criarQuestaoSchema = z.object({
   orgao: z.string().optional(),
   cargo: z.string().optional(),
   topicoIds: z.array(z.string().uuid()).min(1),
-  origem: z.enum(["manual", "pdf"]).default("manual"),
+  origem: z.enum(["manual", "pdf", "gerada_ia"]).default("manual"),
   arquivoOrigem: z.string().optional(),
+  geradoPorModelo: z.string().optional(),
+  // Tarefa F (gerador de questões) já traz a explicação passo a passo
+  // junto — evita gastar outra chamada de IA (Tarefa B) para o mesmo texto.
+  explicacaoInicial: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -71,7 +76,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { topicoIds, ...camposQuestao } = dados.data;
+  const { topicoIds, explicacaoInicial, ...camposQuestao } = dados.data;
 
   const criada = await db.transaction(async (tx) => {
     const [nova] = await tx
@@ -85,6 +90,15 @@ export async function POST(request: NextRequest) {
     await tx
       .insert(questaoTopico)
       .values(topicoIds.map((topicoId) => ({ questaoId: nova.id, topicoId })));
+
+    if (explicacaoInicial) {
+      await tx.insert(explicacao).values({
+        questaoId: nova.id,
+        nivel: "passo_a_passo",
+        texto: explicacaoInicial,
+        modelo: camposQuestao.geradoPorModelo ?? "desconhecido",
+      });
+    }
 
     return nova;
   });

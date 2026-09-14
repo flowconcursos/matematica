@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { and, desc, eq, inArray, isNull, lte } from "drizzle-orm";
 import { db } from "@/db";
-import { revisao, questao, questaoTopico, topico, tentativa } from "@/db/schema";
+import { revisao, questao, questaoTopico, topico, tentativa, heuristica } from "@/db/schema";
 import { exigirSessao } from "@/lib/api";
 import { temAlertaPrerequisito } from "@/lib/revisao";
 
@@ -21,6 +21,7 @@ export async function GET() {
 
   const topicosPorQuestao = new Map<string, { id: string; nome: string; area: string }[]>();
   const ultimaAnotacaoPorQuestao = new Map<string, string | null>();
+  const heuristicasPorTopico = new Map<string, { id: string; texto: string }[]>();
 
   if (questaoIds.length > 0) {
     const linhasTopico = await db
@@ -46,18 +47,34 @@ export async function GET() {
         ultimaAnotacaoPorQuestao.set(t.questaoId, t.anotacao);
       }
     }
+
+    const topicoIds = [...new Set(linhasTopico.map((l) => l.topico.id))];
+    if (topicoIds.length > 0) {
+      const heuristicasAtivas = await db
+        .select({ id: heuristica.id, texto: heuristica.texto, topicoId: heuristica.topicoId })
+        .from(heuristica)
+        .where(and(inArray(heuristica.topicoId, topicoIds), eq(heuristica.status, "ativa")));
+
+      for (const h of heuristicasAtivas) {
+        const lista = heuristicasPorTopico.get(h.topicoId) ?? [];
+        lista.push({ id: h.id, texto: h.texto });
+        heuristicasPorTopico.set(h.topicoId, lista);
+      }
+    }
   }
 
-  const itens = linhas.map(({ revisao: r, questao: q }) => ({
-    ...r,
-    questao: {
-      ...q,
-      topicos: topicosPorQuestao.get(q.id) ?? [],
-    },
-    ultimaAnotacao: ultimaAnotacaoPorQuestao.get(q.id) ?? null,
-    errosAcumulados: r.historico.filter((h) => h.resultado === "errou").length,
-    alertaPrerequisito: temAlertaPrerequisito(r.historico),
-  }));
+  const itens = linhas.map(({ revisao: r, questao: q }) => {
+    const topicos = topicosPorQuestao.get(q.id) ?? [];
+    const heuristicasAtivas = topicos.flatMap((t) => heuristicasPorTopico.get(t.id) ?? []);
+    return {
+      ...r,
+      questao: { ...q, topicos },
+      ultimaAnotacao: ultimaAnotacaoPorQuestao.get(q.id) ?? null,
+      errosAcumulados: r.historico.filter((h) => h.resultado === "errou").length,
+      alertaPrerequisito: temAlertaPrerequisito(r.historico),
+      heuristicasAtivas,
+    };
+  });
 
   const vencidas = itens
     .filter((item) => !item.alertaPrerequisito)

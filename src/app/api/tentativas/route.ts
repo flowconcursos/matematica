@@ -14,6 +14,8 @@ import {
 import { exigirSessao } from "@/lib/api";
 import { metaSegundos } from "@/lib/meta-tempo";
 import { registrarResultadoRevisao } from "@/lib/revisao-db";
+import { atualizarContadoresHeuristicas } from "@/lib/heuristica-db";
+import { acertoFirme } from "@/lib/calculo";
 
 const registrarTentativaSchema = z
   .object({
@@ -86,6 +88,16 @@ export async function POST(request: NextRequest) {
     dados.data.questaoId,
     dados.data.acertou,
     criada.data,
+  );
+
+  await atualizarContadoresHeuristicas(
+    dados.data.questaoId,
+    acertoFirme({
+      acertou: criada.acertou,
+      confiancaDeclarada: criada.confiancaDeclarada,
+      segundos: criada.segundos,
+      metaSegundosNaEpoca: criada.metaSegundosNaEpoca,
+    }),
   );
 
   return NextResponse.json(criada, { status: 201 });

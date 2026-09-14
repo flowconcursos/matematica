@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, ne } from "drizzle-orm";
 import { db } from "@/db";
 import { questao, questaoTopico, topico, sessao, areaEnum } from "@/db/schema";
 import { exigirSessao } from "@/lib/api";
@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Questão gerada por IA nunca é usada em simulado tratado como
+  // termômetro (seção 4.5 do doc de produto) — só manual/pdf entram no pool.
   let linhas = await db
     .select({
       questaoId: questao.id,
@@ -37,7 +39,8 @@ export async function POST(request: NextRequest) {
     })
     .from(questao)
     .innerJoin(questaoTopico, eq(questaoTopico.questaoId, questao.id))
-    .innerJoin(topico, eq(topico.id, questaoTopico.topicoId));
+    .innerJoin(topico, eq(topico.id, questaoTopico.topicoId))
+    .where(ne(questao.origem, "gerada_ia"));
 
   if (dados.data.banca) {
     linhas = linhas.filter((l) => l.banca === dados.data.banca);

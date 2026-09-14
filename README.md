@@ -4,7 +4,7 @@ Instrumento pessoal de diagnóstico e treino de matemática/raciocínio lógico.
 Ver o documento de produto completo para contexto, princípios e o roteiro
 de fases — este README cobre só o estado técnico atual.
 
-## Status: Fase 5 — Banca
+## Status: Fase 6 — Inteligência (roteiro completo)
 
 Entregue na Fase 1 (fundação):
 
@@ -121,9 +121,46 @@ Entregue na Fase 5 (banca):
   o mesmo efeito colateral da Fase 2. Histórico de simulados em
   `/simulado` só lista sessões realmente finalizadas.
 
-Fora do escopo (chegam depois, conforme o roteiro): heurísticas,
-diagnóstico periódico, gerador de questões e tutor conversacional
-(Fase 6).
+Entregue na Fase 6 (inteligência) — fecha o roteiro do documento original:
+
+- Tabelas `heuristica` e `diagnostico` (schema já previa ambas na seção 3).
+- Tarefa C — destilador de heurísticas (`/heuristicas`,
+  `POST /api/heuristicas/gerar`): semanal (mesmo cap de 7 dias do dossiê),
+  sobre as tentativas erradas dos últimos 30 dias, nunca a base inteira.
+  A IA só recebe tentativas reais e é instruída a nunca inventar evidência;
+  o servidor ainda valida cada heurística candidata (tópico existe, ao
+  menos 3 ids de evidência realmente pertencem ao conjunto enviado) antes
+  de gravar — candidatas inválidas são descartadas em silêncio. Toda
+  tentativa registrada atualiza o contador de acertos firmes consecutivos
+  de cada heurística ativa do(s) tópico(s) da questão
+  (`src/lib/heuristica.ts` + `heuristica-db.ts`, coberto por testes);
+  supera com 5 acertos seguidos, arquiva sem evidência nova em 60 dias.
+  Heurística "fixada" pelo usuário fica imune a ambos. `/caderno` mostra a
+  heurística ativa do tópico da questão em revisão.
+- Tarefa D — diagnóstico periódico (`/diagnostico`,
+  `POST /api/diagnostico/gerar`): elegível a cada 7 dias ou 100 tentativas
+  desde o último (`src/lib/diagnostico.ts`, coberto por testes). Entrada
+  são agregados do período (taxa de acerto firme, tempo médio, calibração,
+  causas de erro totais e por tópico — reaproveitando `src/lib/painel.ts`
+  da Fase 2), nunca a base de tentativas inteira. Testa explicitamente a
+  hipótese do usuário ("erro por tempo e desatenção") contra os dados,
+  compara com o diagnóstico anterior e declara se a hipótese anterior se
+  confirmou.
+- Tarefa F — gerador de questões (`/questoes/gerar`,
+  `POST /api/ia/gerar-questao`): tópico + nível (+ padrão do dossiê da
+  banca, se houver) → questão múltipla escolha inédita com 4 alternativas,
+  cada distrator rotulado com o erro específico que captura, gabarito e
+  explicação passo a passo. Mesma tela de conferência item a item das
+  outras vias de entrada de questão; salva com `origem=gerada_ia` e
+  `gerado_por_modelo` preenchido. Questão gerada por IA nunca entra no
+  pool de simulado (`/api/simulado/criar` agora filtra `origem`).
+- Tarefa G — tutor conversacional (`/tutor`, `POST /api/ia/tutor`): acesso
+  somente leitura ao histórico (só `SELECT`), bloqueado enquanto há um
+  simulado em andamento (`sessao` com `modo=simulado` e `fim` nulo). Ao
+  discutir uma questão pendente de revisão, dá pista em até 3 níveis e só
+  entrega a solução completa depois de 2 pedidos explícitos do usuário —
+  reforçado no servidor (defesa em profundidade: mesmo que o modelo tente
+  entregar cedo, a resposta é substituída por uma recusa genérica).
 
 ## Decisões provisórias tomadas
 
@@ -181,6 +218,34 @@ diagnóstico periódico, gerador de questões e tutor conversacional
 - **Deploy**: esta sessão não tenta publicar na Vercel. O projeto está
   pronto para deploy (build passa, variáveis de ambiente documentadas
   abaixo), mas a publicação em si é manual.
+- **Status "arquivada" em heurística**: o doc define `heuristica.status`
+  como só "ativa | superada" na seção 3, mas a seção 5 exige "arquivada
+  sem evidência nova em 60 dias" — um terceiro estado que o enum
+  documentado não cobre. Adicionado `arquivada` ao enum como leitura mais
+  literal do requisito funcional do que do enum truncado.
+- **Proxy para "gatilho respeitado" em heurística**: o gatilho de uma
+  heurística é texto livre (ex: "quando o enunciado disser X"); não há
+  como o código detectar automaticamente se uma questão nova o contém.
+  `acertos_consecutivos_desde` usa acerto firme no mesmo tópico da
+  heurística como proxy — decisão provisória, mais grosseira que checar o
+  gatilho de fato.
+- **Heurística fixada pelo usuário**: o doc define o campo
+  `fixada_pelo_usuario` mas não diz o que ele faz. Decisão provisória:
+  heurística fixada fica imune tanto à superação automática (5 acertos
+  seguidos) quanto ao arquivamento por inatividade (60 dias) — do
+  contrário o campo não teria efeito funcional nenhum.
+- **Janela de evidência da destilação semanal**: o doc não define até
+  onde no passado a Tarefa C deve olhar ("tentativas recentes"). Decisão
+  provisória: últimos 30 dias.
+- **Diagnóstico: dados usados como "agregados do período"**: entre dois
+  diagnósticos, o período analisado é do diagnóstico anterior até agora
+  (ou toda a história, se for o primeiro) — sempre resumido em números
+  (taxas, contagens, médias) antes de ir para a IA, nunca a lista bruta de
+  tentativas, seguindo a letra da regra "nunca a base inteira".
+- **Gerador de questões restrito a múltipla escolha**: o doc pede
+  "alternativas com distratores" sem fixar o tipo da questão. Decisão
+  provisória: só `multipla` (4 alternativas, 1 correta) — é o único tipo
+  em que "distrator que captura um erro específico" faz sentido literal.
 
 ## Rodando localmente
 

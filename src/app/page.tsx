@@ -21,8 +21,8 @@ export default async function HomePage() {
       </header>
 
       <p className="text-sm text-soft">
-        Fase 5: banca. Importação de PDF, dossiê da banca e simulado já
-        funcionam; heurísticas e diagnóstico periódico chegam na Fase 6.
+        Fase 6: inteligência. Heurísticas, diagnóstico periódico, gerador de
+        questões e tutor conversacional completam o roteiro do documento.
       </p>
 
       {usados !== null && (
@@ -73,6 +73,24 @@ export default async function HomePage() {
           Dossiê da banca
         </Link>
         <Link
+          href="/heuristicas"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Heurísticas
+        </Link>
+        <Link
+          href="/diagnostico"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Diagnóstico periódico
+        </Link>
+        <Link
+          href="/tutor"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Tutor
+        </Link>
+        <Link
           href="/importar"
           className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
         >
@@ -89,6 +107,12 @@ export default async function HomePage() {
           className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
         >
           Cadastrar questão
+        </Link>
+        <Link
+          href="/questoes/gerar"
+          className="rounded border border-line bg-white px-4 py-3 text-center text-ink"
+        >
+          Gerar questão com IA
         </Link>
       </nav>
     </main>

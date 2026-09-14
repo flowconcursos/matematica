@@ -70,6 +70,18 @@ export const confiabilidadeEnum = pgEnum("confiabilidade", [
   "alta",
 ]);
 
+/**
+ * O doc (seção 3) só define "ativa | superada" para heuristica.status, mas
+ * a seção 5 (Tarefa C) exige "arquivada sem evidência nova em 60 dias" —
+ * um terceiro estado que o enum documentado não cobre. Adicionado aqui
+ * como decisão provisória (ver README).
+ */
+export const heuristicaStatusEnum = pgEnum("heuristica_status", [
+  "ativa",
+  "superada",
+  "arquivada",
+]);
+
 export const topico = pgTable(
   "topico",
   {
@@ -291,6 +303,60 @@ export const dossieBanca = pgTable("dossie_banca", {
   baseadoEmNQuestoes: integer("baseado_em_n_questoes").notNull(),
   conteudo: jsonb("conteudo").$type<ConteudoDossie>().notNull(),
   confiabilidade: confiabilidadeEnum("confiabilidade").notNull(),
+});
+
+/**
+ * Tarefa C (seção 5): regra curta e acionável, ligada a um gatilho
+ * observável no enunciado, com evidência real em tentativas.
+ */
+export const heuristica = pgTable("heuristica", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  texto: text("texto").notNull(),
+  topicoId: uuid("topico_id")
+    .notNull()
+    .references(() => topico.id, { onDelete: "cascade" }),
+  // Modelo que destilou a heurística (não existe manual nesta fase).
+  origem: text("origem").notNull(),
+  tentativasEvidencia: jsonb("tentativas_evidencia")
+    .$type<string[]>()
+    .notNull()
+    .default([]),
+  criadaEm: timestamp("criada_em", { withTimezone: true }).notNull().defaultNow(),
+  // Contador de acertos firmes consecutivos no tópico desde a criação —
+  // proxy para "gatilho respeitado" (o gatilho é texto livre, não há como
+  // o código detectar automaticamente se apareceu numa questão nova).
+  acertosConsecutivosDesde: integer("acertos_consecutivos_desde").notNull().default(0),
+  status: heuristicaStatusEnum("status").notNull().default("ativa"),
+  fixadaPeloUsuario: boolean("fixada_pelo_usuario").notNull().default(false),
+});
+
+export const heuristicaRelations = relations(heuristica, ({ one }) => ({
+  topico: one(topico, {
+    fields: [heuristica.topicoId],
+    references: [topico.id],
+  }),
+}));
+
+export type EvidenciaDiagnostico = { afirmacao: string; numero: string };
+
+export type ConteudoDiagnostico = {
+  evidencias: EvidenciaDiagnostico[];
+  comoDerrubarHipotese: string[];
+  comparacaoComAnterior: string | null;
+};
+
+/**
+ * Tarefa D (seção 5): a cada 7 dias ou 100 tentativas, sobre agregados do
+ * período — nunca a base inteira.
+ */
+export const diagnostico = pgTable("diagnostico", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  geradoEm: timestamp("gerado_em", { withTimezone: true }).notNull().defaultNow(),
+  periodoAnalisado: text("periodo_analisado").notNull(),
+  hipotesePrincipal: text("hipotese_principal").notNull(),
+  evidencias: jsonb("evidencias").$type<ConteudoDiagnostico>().notNull(),
+  prescricao: text("prescricao").notNull(),
+  modelo: text("modelo").notNull(),
 });
 
 export const topicoRelations = relations(topico, ({ many }) => ({

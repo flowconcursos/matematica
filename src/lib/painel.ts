@@ -129,6 +129,38 @@ export function tempoMedioPorTopico(
     .sort((a, b) => (b.mediaSegundos ?? 0) - (a.mediaSegundos ?? 0));
 }
 
+/**
+ * Distribuição de causa_erro por tópico, só entre as tentativas erradas —
+ * usado pela Tarefa D (diagnóstico) para testar a hipótese "erro por tempo
+ * e desatenção" contra os dados reais, tópico a tópico.
+ */
+export function causasPorTopico(
+  tentativas: TentativaPainel[],
+  questaoParaTopicos: Map<string, string[]>,
+  topicos: { id: string; nome: string }[],
+) {
+  const porTopico = new Map<string, TentativaPainel[]>();
+  for (const t of tentativas) {
+    if (t.acertou || !t.causaErro) continue;
+    for (const topicoId of questaoParaTopicos.get(t.questaoId) ?? []) {
+      const lista = porTopico.get(topicoId) ?? [];
+      lista.push(t);
+      porTopico.set(topicoId, lista);
+    }
+  }
+
+  return topicos
+    .map((topico) => {
+      const erros = porTopico.get(topico.id) ?? [];
+      const porCausa = Object.fromEntries(
+        CAUSAS.map((c) => [c, erros.filter((e) => e.causaErro === c).length]),
+      ) as Record<CausaErro, number>;
+      return { topicoId: topico.id, nome: topico.nome, totalErros: erros.length, porCausa };
+    })
+    .filter((t) => t.totalErros > 0)
+    .sort((a, b) => b.totalErros - a.totalErros);
+}
+
 export type DominioContagem = {
   firmes: number;
   avaliados: number;
