@@ -3,6 +3,7 @@
 import { useEffect, useReducer, useState } from "react";
 import { Cronometro } from "@/components/Cronometro";
 import { ExplicacaoIA } from "@/components/ExplicacaoIA";
+import { MathText } from "@/components/MathText";
 
 export type Confianca = "certo" | "duvida" | "chute";
 export type CausaErro = "conceito" | "conta" | "leitura" | "tempo" | "distrator";
@@ -163,8 +164,10 @@ export function RegistroTentativa({
         parado={estado.fase === "revisao"}
       />
 
-      <section className="rounded border border-line bg-white/60 p-4">
-        <p className="whitespace-pre-wrap text-base text-ink">{questao.enunciado}</p>
+      <section className="rounded-xl border border-line bg-surface p-5 shadow-xs">
+        <div className="whitespace-pre-wrap text-base leading-relaxed text-ink">
+          <MathText text={questao.enunciado} />
+        </div>
       </section>
 
       {estado.fase === "lendo" && (
@@ -210,7 +213,8 @@ export function RegistroTentativa({
               estado.acertou ? "bg-green/10 text-green" : "bg-red/10 text-red"
             }`}
           >
-            {estado.acertou ? "Você acertou." : "Você errou."} Gabarito: {questao.gabarito}
+            {estado.acertou ? "Você acertou." : "Você errou."} Gabarito:{" "}
+            <strong className="font-bold"><MathText text={questao.gabarito} /></strong>
           </div>
 
           {!estado.acertou && (
@@ -293,7 +297,7 @@ function RespostaForm({
               onSubmeter(op, segundos);
             }}
           >
-            {op}
+            <MathText text={op} />
           </BotaoGrande>
         ))}
       </fieldset>

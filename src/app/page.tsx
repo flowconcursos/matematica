@@ -131,43 +131,62 @@ export default async function HomePage() {
               Prática & Fundamentação
             </h3>
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <Link
-              href="/trilha"
-              className="group flex items-start gap-3.5 rounded-lg border border-line bg-surface p-4 transition-all duration-150 hover:border-line-strong hover:shadow-xs"
+              href="/formulario"
+              className="group flex flex-col justify-between rounded-lg border border-amber/40 bg-[#FCFBF7] p-4 transition-all duration-150 hover:border-amber hover:shadow-xs"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-paper text-ink">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-              </div>
               <div>
-                <h4 className="font-serif text-lg font-medium text-ink group-hover:underline decoration-line-strong">
-                  Trilha de Base
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-[#F4EFE6] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber">
+                    Cola de Bolso
+                  </span>
+                  <span className="text-xs text-soft">25 Fórmulas</span>
+                </div>
+                <h4 className="mt-2 font-serif text-lg font-medium text-ink group-hover:underline decoration-amber">
+                  Formulário & Macetes
                 </h4>
-                <p className="mt-0.5 text-xs leading-relaxed text-soft">
-                  Grafo de dependência de pré-requisitos, travas conceituais e reforço focado.
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Fórmulas essenciais de nível médio, pulo do gato e resolução em poucos passos.
                 </p>
               </div>
+              <span className="mt-3 text-xs font-semibold text-amber">Abrir formulário →</span>
+            </Link>
+
+            <Link
+              href="/trilha"
+              className="group flex flex-col justify-between rounded-lg border border-line bg-surface p-4 transition-all duration-150 hover:border-line-strong hover:shadow-xs"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-soft font-medium">Pré-requisitos</span>
+                </div>
+                <h4 className="mt-2 font-serif text-lg font-medium text-ink group-hover:underline decoration-line-strong">
+                  Trilha de Base
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Grafo de dependência de matérias, travas conceituais e reforço focado.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-medium text-ink/70">Acessar trilha →</span>
             </Link>
 
             <Link
               href="/simulado"
-              className="group flex items-start gap-3.5 rounded-lg border border-line bg-surface p-4 transition-all duration-150 hover:border-line-strong hover:shadow-xs"
+              className="group flex flex-col justify-between rounded-lg border border-line bg-surface p-4 transition-all duration-150 hover:border-line-strong hover:shadow-xs"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-paper text-ink">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
               <div>
-                <h4 className="font-serif text-lg font-medium text-ink group-hover:underline decoration-line-strong">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-soft font-medium">Tempo Real</span>
+                </div>
+                <h4 className="mt-2 font-serif text-lg font-medium text-ink group-hover:underline decoration-line-strong">
                   Simulado Oficial
                 </h4>
-                <p className="mt-0.5 text-xs leading-relaxed text-soft">
+                <p className="mt-1 text-xs leading-relaxed text-soft">
                   Provas simuladas completas com ritmo de prova e cálculo de nota líquida.
                 </p>
               </div>
+              <span className="mt-3 text-xs font-medium text-ink/70">Iniciar simulado →</span>
             </Link>
           </div>
         </section>

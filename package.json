@@ -17,6 +17,7 @@
     "drizzle-orm": "^0.45.2",
     "idb-keyval": "^6.3.0",
     "jose": "^6.2.12",
+    "katex": "^0.18.7",
     "next": "16.3.5",
     "pg": "^8.23.0",
     "react": "19.2.8",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/katex": "^0.16.8",
     "@types/node": "^22.20.2",
     "@types/pg": "^8.23.1",
     "@types/react": "^19",

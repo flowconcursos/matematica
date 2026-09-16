@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { CausaErro } from "@/components/RegistroTentativa";
+import { MathText } from "@/components/MathText";
 
 type Nivel = "curta" | "passo_a_passo" | "por_que_erro_parecia_certo";
 
@@ -113,7 +114,9 @@ export function ExplicacaoIA({
 
       {resultado && !carregando && (
         <div className="flex flex-col gap-2">
-          <p className="whitespace-pre-wrap text-sm text-ink">{resultado.texto}</p>
+          <div className="whitespace-pre-wrap text-sm text-ink leading-relaxed">
+            <MathText text={resultado.texto} />
+          </div>
           <p className="text-xs text-amber">Gerado por IA — impressão do modelo.</p>
           <div className="flex items-center gap-2 text-xs text-soft">
             <span>Foi útil?</span>
