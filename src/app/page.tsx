@@ -62,6 +62,37 @@ export default async function HomePage() {
         </div>
       </header>
 
+      {/* Banner de Constância Diária */}
+      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl border border-amber/30 bg-[#FCFBF7] p-4 text-xs">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F4EFE6] text-lg">
+            🔥
+          </span>
+          <div>
+            <strong className="block font-serif text-sm font-bold text-ink">
+              Constância de Treino Deliberado
+            </strong>
+            <span className="text-soft">
+              O segredo da aprovação é o contato diário com as fórmulas e resolução cronometrada.
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-center">
+          <Link
+            href="/agilidade"
+            className="rounded-md bg-ink px-3 py-1.5 text-xs font-semibold text-paper hover:bg-[#262420] transition-colors"
+          >
+            ⚡ Cálculo Mental (60s)
+          </Link>
+          <Link
+            href="/revisao-vespera"
+            className="rounded-md border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink hover:bg-paper transition-colors"
+          >
+            📄 PDF Véspera
+          </Link>
+        </div>
+      </div>
+
       {/* Ações Imediatas (Hero Grid) */}
       <section className="mt-8 grid gap-4 sm:grid-cols-2">
         {/* Treino Rápido */}
@@ -131,7 +162,7 @@ export default async function HomePage() {
               Prática & Fundamentação
             </h3>
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <Link
               href="/formulario"
               className="group flex flex-col justify-between rounded-lg border border-amber/40 bg-[#FCFBF7] p-4 transition-all duration-150 hover:border-amber hover:shadow-xs"
@@ -151,6 +182,46 @@ export default async function HomePage() {
                 </p>
               </div>
               <span className="mt-3 text-xs font-semibold text-amber">Abrir formulário →</span>
+            </Link>
+
+            <Link
+              href="/agilidade"
+              className="group flex flex-col justify-between rounded-lg border border-red/30 bg-[#FAF0ED]/40 p-4 transition-all duration-150 hover:border-red hover:shadow-xs"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-[#FAF0ED] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red">
+                    Speed Math
+                  </span>
+                  <span className="text-xs text-soft">60s / 120s</span>
+                </div>
+                <h4 className="mt-2 font-serif text-lg font-medium text-ink group-hover:underline decoration-red">
+                  Cálculo Rápido & Agilidade
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Treine macetes mentais para não perder tempo fazendo conta na prova.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-semibold text-red">Treinar velocidade →</span>
+            </Link>
+
+            <Link
+              href="/editais"
+              className="group flex flex-col justify-between rounded-lg border border-line bg-surface p-4 transition-all duration-150 hover:border-line-strong hover:shadow-xs"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-soft font-medium">Bancas Oficiais</span>
+                  <span className="text-[10px] rounded bg-paper px-1.5 py-0.5 font-bold text-ink">4 Editais</span>
+                </div>
+                <h4 className="mt-2 font-serif text-lg font-medium text-ink group-hover:underline decoration-line-strong">
+                  Editais Guiados
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Raio-X estatístico para Caixa/BB, Correios, TJ-SP e Cebraspe.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-medium text-ink/70">Ver mapa de bancas →</span>
             </Link>
 
             <Link
@@ -187,6 +258,25 @@ export default async function HomePage() {
                 </p>
               </div>
               <span className="mt-3 text-xs font-medium text-ink/70">Iniciar simulado →</span>
+            </Link>
+
+            <Link
+              href="/revisao-vespera"
+              className="group flex flex-col justify-between rounded-lg border border-line bg-surface p-4 transition-all duration-150 hover:border-line-strong hover:shadow-xs"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-soft font-medium">Porta da Prova</span>
+                  <span className="text-[10px] rounded bg-paper px-1.5 py-0.5 font-bold text-ink">A4</span>
+                </div>
+                <h4 className="mt-2 font-serif text-lg font-medium text-ink group-hover:underline decoration-line-strong">
+                  Folha de Véspera (PDF)
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Resumo das 10 fórmulas críticas formatado para imprimir ou salvar em PDF.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-medium text-ink/70">Gerar folha A4 →</span>
             </Link>
           </div>
         </section>

@@ -4,6 +4,7 @@ import { useEffect, useReducer, useState } from "react";
 import { Cronometro } from "@/components/Cronometro";
 import { ExplicacaoIA } from "@/components/ExplicacaoIA";
 import { MathText } from "@/components/MathText";
+import { RascunhoDigital } from "@/components/RascunhoDigital";
 
 export type Confianca = "certo" | "duvida" | "chute";
 export type CausaErro = "conceito" | "conta" | "leitura" | "tempo" | "distrator";
@@ -269,6 +270,9 @@ export function RegistroTentativa({
           </button>
         </div>
       )}
+
+      {/* Rascunho Digital Flutuante */}
+      <RascunhoDigital />
     </div>
   );
 }
