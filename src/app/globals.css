@@ -1,35 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #e9eef2;
-  --ink: #1d3557;
-  --soft: #6b819a;
-  --line: #c9d6e1;
-  --red: #b3291e;
-  --green: #2c6a4a;
-  --amber: #96690a;
+  --paper: #F9F8F5;
+  --surface: #FFFFFF;
+  --ink: #1A1915;
+  --soft: #6E6B65;
+  --line: #E8E6E0;
+  --line-strong: #D1CEBE;
+  --red: #B33928;
+  --green: #266B46;
+  --amber: #A67624;
 }
 
 @theme inline {
   --color-paper: var(--paper);
+  --color-surface: var(--surface);
   --color-ink: var(--ink);
   --color-soft: var(--soft);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-red: var(--red);
   --color-green: var(--green);
   --color-amber: var(--amber);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif-editorial), Georgia, Cambria, serif;
 }
 
 body {
   background-color: var(--paper);
   color: var(--ink);
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: -1px -1px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -40,3 +42,4 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
