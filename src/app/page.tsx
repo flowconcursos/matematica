@@ -154,6 +154,111 @@ export default async function HomePage() {
 
       {/* Hub em Categorias */}
       <div className="mt-12 space-y-10">
+        {/* Seção 0: Construção de Base (Pegando pelos Braços) */}
+        <section>
+          <div className="flex items-center justify-between border-b border-line pb-2">
+            <div className="flex items-center gap-3">
+              <span className="font-serif text-sm italic text-amber font-bold">★</span>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-ink">
+                Construção de Base &bull; Pegando Pelos Braços
+              </h3>
+            </div>
+            <span className="text-[11px] font-mono text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-full font-medium">
+              Do Zero ao Gabarito
+            </span>
+          </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {/* 1. Nivelamento */}
+            <Link
+              href="/nivelamento"
+              className="group flex flex-col justify-between rounded-xl border border-line bg-surface p-4 transition-all duration-150 hover:border-line-strong hover:shadow-xs"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-mono font-semibold uppercase text-stone-700">
+                    Ponto de Partida
+                  </span>
+                  <span className="text-xs text-soft">8 Itens</span>
+                </div>
+                <h4 className="mt-2 font-serif text-base font-medium text-ink group-hover:underline">
+                  Teste de Nivelamento
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Raio-X de lacunas: descubra exatamente onde você trava e qual o seu ponto inicial ideal.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-semibold text-stone-900">Fazer diagnóstico →</span>
+            </Link>
+
+            {/* 2. Jornada Passo a Passo */}
+            <Link
+              href="/jornada"
+              className="group flex flex-col justify-between rounded-xl border border-amber/50 bg-[#FCFBF7] p-4 transition-all duration-150 hover:border-amber hover:shadow-sm"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-mono font-semibold uppercase text-amber-900">
+                    Trilha Estruturada
+                  </span>
+                  <span className="text-xs text-amber-800 font-mono">6 Níveis</span>
+                </div>
+                <h4 className="mt-2 font-serif text-base font-medium text-ink group-hover:underline decoration-amber">
+                  Jornada do Zero
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Intuição prática, regras de ouro, exemplos dissecados e micro-quizzes de fixação.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-semibold text-amber-800">Abrir jornada →</span>
+            </Link>
+
+            {/* 3. Tradutor de Enunciados */}
+            <Link
+              href="/tradutor-enunciados"
+              className="group flex flex-col justify-between rounded-xl border border-blue-200/80 bg-blue-50/30 p-4 transition-all duration-150 hover:border-blue-400 hover:shadow-xs"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-mono font-semibold uppercase text-blue-800">
+                    Português &rarr; Álgebra
+                  </span>
+                  <span className="text-xs text-blue-700 font-mono">24 Termos</span>
+                </div>
+                <h4 className="mt-2 font-serif text-base font-medium text-ink group-hover:underline decoration-blue-500">
+                  Tradutor de Enunciados
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Dicionário de termos de banca e treino para converter textos em equações exatas.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-semibold text-blue-700">Aprender tradução →</span>
+            </Link>
+
+            {/* 4. Resolução Guiada */}
+            <Link
+              href="/resolucao-guiada"
+              className="group flex flex-col justify-between rounded-xl border border-emerald-200/80 bg-emerald-50/30 p-4 transition-all duration-150 hover:border-emerald-400 hover:shadow-xs"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-mono font-semibold uppercase text-emerald-800">
+                    Andaime Cognitivo
+                  </span>
+                  <span className="text-xs text-emerald-700 font-mono">3 Degraus</span>
+                </div>
+                <h4 className="mt-2 font-serif text-base font-medium text-ink group-hover:underline decoration-emerald-500">
+                  Resolução Guiada
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Aprenda a pensar como um concurseiro experiente: Dados &rarr; Estratégia &rarr; Conta.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-semibold text-emerald-700">Praticar degraus →</span>
+            </Link>
+          </div>
+        </section>
+
         {/* Seção 1: Fundamentação e Provas */}
         <section>
           <div className="flex items-center gap-3 border-b border-line pb-2">
