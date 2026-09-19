@@ -168,7 +168,7 @@ export default async function HomePage() {
             </span>
           </div>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {/* 1. Nivelamento */}
             <Link
               href="/nivelamento"
@@ -213,7 +213,29 @@ export default async function HomePage() {
               <span className="mt-3 text-xs font-semibold text-amber-800">Abrir jornada →</span>
             </Link>
 
-            {/* 3. Tradutor de Enunciados */}
+            {/* 3. Central de Interpretação & Raio-X com IA */}
+            <Link
+              href="/interpretacao"
+              className="group flex flex-col justify-between rounded-xl border border-purple-200/90 bg-[#FAF7FD] p-4 transition-all duration-150 hover:border-purple-400 hover:shadow-sm sm:col-span-2 lg:col-span-1"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-mono font-semibold uppercase text-purple-900">
+                    Raio-X com IA
+                  </span>
+                  <span className="text-xs text-purple-700 font-mono">Ponto a Ponto</span>
+                </div>
+                <h4 className="mt-2 font-serif text-base font-medium text-ink group-hover:underline decoration-purple-600">
+                  Interpretação & Macetes
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft">
+                  Cole qualquer questão para dissecar dados, armadilhas, tradução e o pulo do gato com IA.
+                </p>
+              </div>
+              <span className="mt-3 text-xs font-semibold text-purple-800">Dissecar questão →</span>
+            </Link>
+
+            {/* 4. Tradutor de Enunciados */}
             <Link
               href="/tradutor-enunciados"
               className="group flex flex-col justify-between rounded-xl border border-blue-200/80 bg-blue-50/30 p-4 transition-all duration-150 hover:border-blue-400 hover:shadow-xs"
@@ -235,10 +257,10 @@ export default async function HomePage() {
               <span className="mt-3 text-xs font-semibold text-blue-700">Aprender tradução →</span>
             </Link>
 
-            {/* 4. Resolução Guiada */}
+            {/* 5. Resolução Guiada */}
             <Link
               href="/resolucao-guiada"
-              className="group flex flex-col justify-between rounded-xl border border-emerald-200/80 bg-emerald-50/30 p-4 transition-all duration-150 hover:border-emerald-400 hover:shadow-xs"
+              className="group flex flex-col justify-between rounded-xl border border-emerald-200/80 bg-emerald-50/30 p-4 transition-all duration-150 hover:border-emerald-400 hover:shadow-xs sm:col-span-2 lg:col-span-2"
             >
               <div>
                 <div className="flex items-center justify-between">
