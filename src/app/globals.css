@@ -2,27 +2,37 @@
 @import "katex/dist/katex.min.css";
 
 :root {
-  --paper: #F9F8F5;
+  --paper: #FBFBFA;
   --surface: #FFFFFF;
-  --ink: #1A1915;
-  --soft: #6E6B65;
-  --line: #E8E6E0;
-  --line-strong: #D1CEBE;
-  --red: #B33928;
-  --green: #266B46;
-  --amber: #A67624;
+  --surface-alt: #F4F2EB;
+  --ink: #1C1B18;
+  --ink-light: #2D2B27;
+  --soft: #636058;
+  --soft-light: #8C887E;
+  --line: #E8E5DD;
+  --line-strong: #D6D2C4;
+  --red: #B83A2A;
+  --green: #236E48;
+  --amber: #A36F1E;
+  --blue: #225C9E;
+  --purple: #6B46C1;
 }
 
 @theme inline {
   --color-paper: var(--paper);
   --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
   --color-ink: var(--ink);
+  --color-ink-light: var(--ink-light);
   --color-soft: var(--soft);
+  --color-soft-light: var(--soft-light);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-red: var(--red);
   --color-green: var(--green);
   --color-amber: var(--amber);
+  --color-blue: var(--blue);
+  --color-purple: var(--purple);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-serif-editorial), Georgia, Cambria, serif;
@@ -33,6 +43,40 @@ body {
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Sombras suaves e elevação tátil anti-fadiga (Neuro-Design) */
+.card-tactile {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 3px rgba(28, 27, 24, 0.02), 0 6px 16px -4px rgba(28, 27, 24, 0.03);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms ease;
+}
+
+.card-tactile:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  box-shadow: 0 3px 8px rgba(28, 27, 24, 0.04), 0 14px 28px -6px rgba(28, 27, 24, 0.06);
+}
+
+/* Brilho suave sutil para foco guiado */
+.glow-amber-subtle {
+  box-shadow: 0 0 0 1px rgba(163, 111, 30, 0.15), 0 4px 16px -2px rgba(163, 111, 30, 0.08);
+}
+
+.glow-emerald-subtle {
+  box-shadow: 0 0 0 1px rgba(35, 110, 72, 0.15), 0 4px 16px -2px rgba(35, 110, 72, 0.08);
+}
+
+.glow-purple-subtle {
+  box-shadow: 0 0 0 1px rgba(107, 70, 193, 0.15), 0 4px 16px -2px rgba(107, 70, 193, 0.08);
+}
+
+/* Fórmulas matemáticas com respiro visual */
+.katex-display {
+  margin: 1.25rem 0 !important;
+  padding: 0.5rem 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
