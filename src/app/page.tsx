@@ -273,7 +273,7 @@ export default async function HomePage() {
             {/* 5. Resolução Guiada */}
             <Link
               href="/resolucao-guiada"
-              className="group flex flex-col justify-between rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-[#FAFDFB] to-[#F2FAF5] p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-md sm:col-span-2 lg:col-span-2"
+              className="group flex flex-col justify-between rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-[#FAFDFB] to-[#F2FAF5] p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-md"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -291,6 +291,54 @@ export default async function HomePage() {
               </div>
               <span className="mt-4 text-xs font-mono font-semibold text-emerald-700 group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
                 Praticar degraus &rarr;
+              </span>
+            </Link>
+
+            {/* 6. Laboratório Visual Interativo */}
+            <Link
+              href="/visual"
+              className="group flex flex-col justify-between rounded-2xl border border-amber/40 bg-gradient-to-br from-[#FFFDF9] via-[#FAF6ED] to-[#F7EFE1] p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-amber hover:shadow-md"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-amber/20 border border-amber/40 px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase text-amber">
+                    Simulações Vivas
+                  </span>
+                  <span className="text-xs font-mono text-amber-800 font-bold">Sliders & SVG</span>
+                </div>
+                <h4 className="mt-3 font-serif text-lg font-medium text-ink group-hover:underline decoration-amber">
+                  Laboratório Visual
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft font-serif">
+                  Fatiamento de frações, balança de regra de três e diagrama de Venn interativos.
+                </p>
+              </div>
+              <span className="mt-4 text-xs font-mono font-semibold text-amber group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+                Abrir laboratório &rarr;
+              </span>
+            </Link>
+
+            {/* 7. Flashcards 3D com Repetição Espaçada */}
+            <Link
+              href="/flashcards"
+              className="group flex flex-col justify-between rounded-2xl border border-purple-200/80 bg-gradient-to-br from-[#FCFBFD] via-[#F8F4FD] to-[#F3EBFB] p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-purple-400 hover:shadow-md"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-purple-100/80 border border-purple-200 px-2.5 py-0.5 text-[10px] font-mono font-semibold uppercase text-purple-900">
+                    Memória Ativa
+                  </span>
+                  <span className="text-xs font-mono text-purple-700 font-semibold">Flip 3D &bull; SRS</span>
+                </div>
+                <h4 className="mt-3 font-serif text-lg font-medium text-ink group-hover:underline decoration-purple-500">
+                  Flashcards 3D
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-soft font-serif">
+                  Memorização relâmpago de fórmulas e macetes de banca com efeito 3D e repetição espaçada.
+                </p>
+              </div>
+              <span className="mt-4 text-xs font-mono font-semibold text-purple-800 group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+                Revisar cards &rarr;
               </span>
             </Link>
           </div>

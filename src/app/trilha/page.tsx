@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useState } from "react";
 import Link from "next/link";
+import { MapaConhecimentoTree } from "@/components/visual/MapaConhecimentoTree";
 
 type Dominio = "nao_avaliado" | "fragil" | "em_construcao" | "firme";
 
@@ -38,6 +39,7 @@ function reducer(_estado: Estado, novoEstado: Estado): Estado {
 
 export default function TrilhaPage() {
   const [topicos, dispatch] = useReducer(reducer, "carregando" as Estado);
+  const [modoVisual, setModoVisual] = useState<"mapa" | "lista">("mapa");
   const [origemId, setOrigemId] = useState("");
   const [dependeDeId, setDependeDeId] = useState("");
   const [erroAresta, setErroAresta] = useState<string | null>(null);
@@ -52,7 +54,8 @@ export default function TrilhaPage() {
     void carregar();
   }, [carregar]);
 
-  const porId = new Map((Array.isArray(topicos) ? topicos : []).map((t) => [t.id, t]));
+  const listaTopicos = Array.isArray(topicos) ? topicos : [];
+  const porId = new Map(listaTopicos.map((t) => [t.id, t]));
 
   async function adicionarPrerequisito() {
     if (!origemId || !dependeDeId) return;
@@ -89,129 +92,157 @@ export default function TrilhaPage() {
 
   if (topicos === "carregando") {
     return (
-      <main className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4 py-8">
-        <p className="text-soft">Carregando trilha…</p>
+      <main className="mx-auto flex min-h-dvh max-w-5xl flex-col px-4 py-8">
+        <p className="text-soft font-mono">Carregando mapa cósmico de habilidades…</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 px-4 py-8">
-      <header className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-ink">Trilha de base</h1>
-        <Link href="/" className="text-sm text-soft underline">
-          Voltar
-        </Link>
+    <main className="mx-auto flex min-h-dvh max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4">
+        <div>
+          <Link href="/" className="text-xs text-soft hover:text-ink transition-colors">
+            ← Voltar ao Hub Principal
+          </Link>
+          <h1 className="text-2xl font-serif font-normal text-ink mt-1">
+            Trilha de Conhecimento & Pré-Requisitos
+          </h1>
+        </div>
+
+        <div className="flex items-center gap-2 self-end sm:self-center">
+          <div className="flex rounded-xl border border-line bg-surface-alt p-1">
+            <button
+              onClick={() => setModoVisual("mapa")}
+              className={"px-3 py-1.5 text-xs font-medium rounded-lg transition-all " + (modoVisual === "mapa" ? "bg-surface font-semibold text-ink shadow-xs" : "text-soft hover:text-ink")}
+            >
+              🌌 Mapa Cósmico (Skill Tree)
+            </button>
+            <button
+              onClick={() => setModoVisual("lista")}
+              className={"px-3 py-1.5 text-xs font-medium rounded-lg transition-all " + (modoVisual === "lista" ? "bg-surface font-semibold text-ink shadow-xs" : "text-soft hover:text-ink")}
+            >
+              📋 Visão em Lista & Gestão
+            </button>
+          </div>
+        </div>
       </header>
 
-      <p className="text-sm text-soft">
-        Um tópico só libera quando todos os seus pré-requisitos diretos
-        estão firmes. O bloqueio é a função principal desta trilha.
-      </p>
+      {modoVisual === "mapa" && (
+        <div>
+          <MapaConhecimentoTree topicos={listaTopicos} />
+        </div>
+      )}
 
-      <section className="flex flex-col gap-2">
-        {topicos.map((t) => {
-          const bloqueadores = t.prerequisitos
-            .map((id) => porId.get(id))
-            .filter((p): p is TopicoTrilha => !!p && p.dominio !== "firme");
+      {modoVisual === "lista" && (
+        <section className="flex flex-col gap-3">
+          <p className="text-xs text-soft font-serif">
+            Um tópico só libera quando todos os seus pré-requisitos diretos estão firmes. O bloqueio evita que você tente resolver problemas complexos com lacunas na base.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {listaTopicos.map((t) => {
+              const bloqueadores = t.prerequisitos
+                .map((id) => porId.get(id))
+                .filter((p): p is TopicoTrilha => !!p && p.dominio !== "firme");
 
-          return (
-            <div
-              key={t.id}
-              className="rounded border border-line bg-white/60 p-3"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <div>
-                  <p className="text-ink">{t.nome}</p>
-                  <p className="text-xs text-soft">
-                    {t.area} · nível base {t.nivelBase}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className={`text-sm font-semibold ${COR_DOMINIO[t.dominio]}`}>
-                    {ROTULO_DOMINIO[t.dominio]}
-                  </p>
-                  <p className={`text-xs ${t.liberado ? "text-green" : "text-red"}`}>
-                    {t.liberado ? "Liberado" : "Bloqueado"}
-                    {t.liberadoManualmente && " (manual)"}
-                  </p>
-                </div>
-              </div>
+              return (
+                <div
+                  key={t.id}
+                  className="rounded-2xl border border-line bg-surface p-4 shadow-xs"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-serif text-base font-normal text-ink">{t.nome}</p>
+                      <p className="text-xs text-soft font-mono mt-0.5">
+                        {t.area.replace("_", " ")} • Nível {t.nivelBase}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className={"inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase " + (t.dominio === "firme" ? "bg-green/10 text-green" : t.dominio === "fragil" ? "bg-red/10 text-red" : "bg-amber/10 text-amber")}>
+                        {ROTULO_DOMINIO[t.dominio]}
+                      </span>
+                      <p className={"text-xs font-mono mt-1 " + (t.liberado ? "text-green font-semibold" : "text-red")}>
+                        {t.liberado ? "Liberado" : "Bloqueado"}
+                        {t.liberadoManualmente && " (manual)"}
+                      </p>
+                    </div>
+                  </div>
 
-              {!t.liberado && bloqueadores.length > 0 && (
-                <div className="mt-2 flex flex-col gap-1 border-t border-line pt-2 text-sm">
-                  <p className="text-soft">
-                    Bloqueado por:{" "}
-                    {bloqueadores.map((b) => b.nome).join(", ")}
-                  </p>
-                  <Link
-                    href={`/trilha/relampago/${bloqueadores[0].id}`}
-                    className="self-start text-sm text-ink underline"
-                  >
-                    Não concordo com o bloqueio
-                  </Link>
-                </div>
-              )}
-
-              {t.dominio === "fragil" && (
-                <div className="mt-2 border-t border-line pt-2">
-                  <Link
-                    href={`/trilha/reforco/${t.id}`}
-                    className="text-sm text-ink underline"
-                  >
-                    Reforçar este tópico
-                  </Link>
-                </div>
-              )}
-
-              {t.prerequisitos.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1 border-t border-line pt-2">
-                  {t.prerequisitos.map((id) => {
-                    const p = porId.get(id);
-                    if (!p) return null;
-                    return (
-                      <button
-                        key={id}
-                        onClick={() => removerPrerequisito(t.id, id)}
-                        title="Remover pré-requisito"
-                        className="rounded border border-line px-2 py-1 text-xs text-soft"
+                  {!t.liberado && bloqueadores.length > 0 && (
+                    <div className="mt-3 flex flex-col gap-1.5 border-t border-line/60 pt-2.5 text-xs">
+                      <p className="text-soft">
+                        Bloqueado por: <strong>{bloqueadores.map((b) => b.nome).join(", ")}</strong>
+                      </p>
+                      <Link
+                        href={"/trilha/relampago/" + bloqueadores[0].id}
+                        className="self-start text-xs font-mono font-semibold text-amber hover:underline"
                       >
-                        depende de {p.nome} ×
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </section>
+                        ⚡ Não concordo com o bloqueio (Teste)
+                      </Link>
+                    </div>
+                  )}
 
-      <section className="rounded border border-line bg-white/60 p-3">
-        <h2 className="mb-2 text-sm font-semibold text-ink">
-          Adicionar pré-requisito
+                  {t.dominio === "fragil" && (
+                    <div className="mt-3 border-t border-line/60 pt-2.5">
+                      <Link
+                        href={"/trilha/reforco/" + t.id}
+                        className="text-xs font-mono font-semibold text-red hover:underline"
+                      >
+                        🎯 Reforçar este tópico agora
+                      </Link>
+                    </div>
+                  )}
+
+                  {t.prerequisitos.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1.5 border-t border-line/60 pt-2.5">
+                      {t.prerequisitos.map((id) => {
+                        const p = porId.get(id);
+                        if (!p) return null;
+                        return (
+                          <button
+                            key={id}
+                            onClick={() => removerPrerequisito(t.id, id)}
+                            title="Remover pré-requisito"
+                            className="rounded-lg border border-line bg-surface-alt px-2 py-1 text-[11px] font-mono text-soft hover:text-red hover:border-red"
+                          >
+                            depende de {p.nome} ×
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <section className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-ink mb-3 font-mono">
+          Adicionar / Conectar Pré-requisito
         </h2>
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="flex flex-col gap-2.5 sm:flex-row">
           <select
             value={origemId}
             onChange={(e) => setOrigemId(e.target.value)}
-            className="flex-1 rounded border border-line px-2 py-2 text-sm"
+            className="flex-1 rounded-xl border border-line bg-surface px-3 py-2 text-xs font-mono text-ink"
           >
-            <option value="">Tópico…</option>
-            {topicos.map((t) => (
+            <option value="">Selecione o Tópico…</option>
+            {listaTopicos.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.nome}
               </option>
             ))}
           </select>
-          <span className="self-center text-sm text-soft">depende de</span>
+          <span className="self-center text-xs text-soft font-mono">depende de</span>
           <select
             value={dependeDeId}
             onChange={(e) => setDependeDeId(e.target.value)}
-            className="flex-1 rounded border border-line px-2 py-2 text-sm"
+            className="flex-1 rounded-xl border border-line bg-surface px-3 py-2 text-xs font-mono text-ink"
           >
-            <option value="">Pré-requisito…</option>
-            {topicos.map((t) => (
+            <option value="">Selecione o Pré-requisito…</option>
+            {listaTopicos.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.nome}
               </option>
@@ -220,12 +251,12 @@ export default function TrilhaPage() {
           <button
             onClick={adicionarPrerequisito}
             disabled={salvandoAresta || !origemId || !dependeDeId}
-            className="rounded bg-ink px-3 py-2 text-sm text-white disabled:opacity-60"
+            className="rounded-xl bg-ink px-4 py-2 text-xs font-mono font-semibold text-paper disabled:opacity-50 hover:bg-[#2B2925]"
           >
-            Adicionar
+            Conectar Elo →
           </button>
         </div>
-        {erroAresta && <p className="mt-2 text-sm text-red">{erroAresta}</p>}
+        {erroAresta && <p className="mt-2 text-xs font-mono text-red">{erroAresta}</p>}
       </section>
     </main>
   );
